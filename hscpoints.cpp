@@ -109,7 +109,10 @@ HSCPoint* HSCPoints::get_point(int32_t number)
     for (HSCPoint* pnt : m_inst->m_points)
         if (pnt->get_number() == number)
             return pnt;
-    return new HSCPoint(number);
+    HSCPoint* pnt = new HSCPoint(number);
+    if (pnt != nullptr)
+        m_inst->m_points.push_back(pnt);
+    return pnt;
 }
 
 HSCPoint* HSCPoints::get_point(std::string name)
@@ -118,5 +121,8 @@ HSCPoint* HSCPoints::get_point(std::string name)
     for (HSCPoint* pnt : m_inst->m_points)
         if (pnt->get_name().compare(name) == 0)
             return pnt;
-    return new HSCPoint(name);
+    HSCPoint* pnt = new HSCPoint(name);
+    if (pnt != nullptr)
+        m_inst->m_points.push_back(pnt);
+    return pnt;
 }
