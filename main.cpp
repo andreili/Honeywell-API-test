@@ -294,13 +294,13 @@ int main(int argc, char **argv)
 
     Log::set_level(static_cast<Log::ELogLevel>(log_level));
 
-    printf("Initialization: ");
+    std::cout << "Initialization: ";
     if (c_gbload() != 0)
     {
-        printf("Failed!\n");
+        std::cout << "Failed!" << std::endl;
         return 1;
     }
-    printf("OK!\n");
+    std::cout << "OK!" << std::endl;
 
     new HSCPoints();
 
