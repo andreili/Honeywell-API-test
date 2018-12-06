@@ -228,7 +228,7 @@ void print_point_info(int level, HSCPoint *point)
 
 void print_point_param_info(HSCPointParam *param)
 {
-    if (param->get_type() == 65535)
+    if (param->get_type() == EPrmType::NONE)
         return;
 
     std::cout << "\t" << param->get_name() << "[" << param->get_index() << "]" << std::endl;

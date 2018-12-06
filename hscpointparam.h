@@ -6,6 +6,32 @@
 
 class HSCPoint;
 
+enum class EPrmType
+{
+    UNK = 0,
+    CHAR = 1,
+    INT2 = 2,
+    INT4 = 3,
+    REAL = 4,
+    DBLE = 5,
+    HIST = 6,
+    VAR = 7,
+    ENUM = 8,
+    DATE_TYIME = 9,
+    STATUS = 10,
+    SRCADDR = 11,
+    DSTADDR = 12,
+    SERVAR = 13,
+    POINTREF = 14,
+    INT8 = 15,
+    TIME = 16,
+    DELTATIME = 17,
+    TIMEOFDAY = 18,
+    ALARMAHANDLE = 19,
+    POINTREF2 = 20,
+    NONE = 65535
+};
+
 class HSCPointParam
 {
 public:
@@ -19,7 +45,7 @@ public:
     bool is_historisable();
 
     int get_index() { return m_param; }
-    int get_type() { if (get_data()) return m_data->type; else return 0; }
+    EPrmType get_type() { if (get_data()) return static_cast<EPrmType>(m_data->type); else return EPrmType::UNK; }
 
     std::string get_name() { return m_name; }
 

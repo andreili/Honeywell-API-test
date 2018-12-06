@@ -5,6 +5,52 @@
 #include <fstream>
 #include <hscpointparam.h>
 
+std::map<int,std::string> subtype_names = {
+    {   0, "UNK"},
+    {   5, "IO"},
+    {  20, "C300"},
+    {  21, "CEEC300"},
+    {  22, "IOLINK"},
+    {  27, "SERIES_C_IO"},
+    {  37, "PGM2"},
+    {  38, "PBLINK"},
+    {  39, "GENDSBPB"},
+    {  40, "PIOMB"},
+    {SYS_MODEL, "MODEL"},
+    {SYS_SERVER, "SERVER"},
+    {SYS_CONTROLLERS, "CONTROLLERS"},
+    {SYS_CHANNEL, "CHANNEL"},
+    {SYS_CONTROLLER, "CONTROLLER"},
+    {SYS_PRINTERS, "PRINTERS"},
+    {SYS_PRINTER, "PRINTER"},
+    {SYS_SYSINTERFACES, "SYSINTERFACES"},
+    {SYS_SYSINTERFACE, "SYSINTERFACE"},
+    {SYS_STATIONS, "STATIONS"},
+    {SYS_FLEXSTATIONS, "FLEXSTATIONS"},
+    {SYS_CONSSTATIONS, "CONSSTATIONS"},
+    {SYS_FLEXSTATION, "FLEXSTATION"},
+    {SYS_CONSSTATION, "CONSSTATION"},
+    {SYS_CONSOLES, "CONSOLES"},
+    {SYS_CONSOLE, "CONSOLE"},
+    {SYS_CSTNCLIENT, "CSTNCLIENT"},
+    {SYS_UNASSIGNEDITEMS, "UNASSIGNEDITEMS"},
+    {SYS_COMPUTERS, "COMPUTERS"},
+    {SYS_COMPUTER, "COMPUTER"},
+    {SYS_DOMAIN, "DOMAIN"},
+    {SYS_ORGUNIT, "ORGUNIT"},
+    {SYS_NETEQUIP, "NETEQUIP"},
+    {SYS_SWITCH, "SWITCH"},
+    {SYS_FTE, "FTE"},
+    {SYS_FTECOMMUNITY, "FTECOMMUNITY"},
+    {SYS_FTEDEVICE, "FTEDEVICE"},
+    {SYS_9PSWITCH, "9PSWITCH"},
+    {SYS_UNKNOWNCONTROLLERS, "UNKNOWNCONTROLLERS"},
+    {SYS_PNTSRV_CONTROLLER, "PNTSRV_CONTROLLER"},
+    {SYS_PNTSRV_CHANNEL, "PNTSRV_CHANNEL"},
+    {SYS_PNTSRV_NETWORK, "PNTSRV_NETWORK"},
+    {SYS_ORPHANACTS, "ORPHANACTS"}
+};
+
 HSCPoint::HSCPoint(int32_t point_number)
     : m_number (point_number)
     , m_index (0)
@@ -104,6 +150,14 @@ void HSCPoint::dump_to_file(std::string fn)
         file.write(reinterpret_cast<char*>(m_data), get_data_size());
         file.close();
     }
+}
+
+std::string HSCPoint::get_subtype_name()
+{
+    if (!get_data())
+        return "";
+
+    return subtype_names[m_data->subtype];
 }
 
 std::string HSCPoint::get_name()
