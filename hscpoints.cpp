@@ -48,6 +48,7 @@ bool HSCPoints::init(bool from_file)
         if (m_inst->m_addr == nullptr)
         {
             Log::message(Log::LOG_ERROR, "Unable to malloc point index table!\n");
+            shTransAbort(POINTSID, nullptr, nullptr);
             return false;
         }
 
@@ -87,7 +88,8 @@ bool HSCPoints::check_point_index(int32_t point)
             if (m_inst->m_addr == nullptr)
             {
                 Log::message(Log::LOG_ERROR, "Unable to realloc point index table!\n");
-                std::terminate();
+                shTransAbort(POINTSID, nullptr, nullptr);
+                return false;
             }
 
             m_inst->m_points_indexes = reinterpret_cast<int32_t*>(m_inst->m_addr);
