@@ -20,6 +20,8 @@ public:
     static int32_t get_idx(int32_t point) { return m_inst->m_points_indexes[POINTS_FIRST_IDX + point]; }
     static void set_idx(int32_t point, int32_t val) { m_inst->m_points_indexes[POINTS_FIRST_IDX + point] = val; }
 
+    static int scan_all_points();
+
     static HSCPoint* get_point(int32_t number);
     static HSCPoint* get_point(std::string name);
     static HSCPoint* get_point_by_idx(int32_t idx) { if (idx < m_inst->m_points.size()) return m_inst->m_points[idx]; else return nullptr; }

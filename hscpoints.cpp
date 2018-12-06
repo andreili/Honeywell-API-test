@@ -103,6 +103,22 @@ bool HSCPoints::check_point_index(int32_t point)
     return true;
 }
 
+int HSCPoints::scan_all_points()
+{
+    for (int32_t i=1 ; i<1000*1000 ; ++i)
+    {
+        HSCPoint* pnt = new HSCPoint(i);
+        if (pnt != nullptr)
+        {
+            if (pnt->get_data())
+                m_inst->m_points.push_back(pnt);
+            else
+                delete pnt;
+        }
+    }
+    return get_points_count();
+}
+
 HSCPoint* HSCPoints::get_point(int32_t number)
 {
     Log::message(Log::LOG_VERBOSE, "HSCPoints::get_point(%i):\n", number);
