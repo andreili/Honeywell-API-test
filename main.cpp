@@ -268,46 +268,6 @@ void dump_data(char* data, int size, std::string fn)
     file.close();
 }
 
-#include "src/GBcrttbl.h"
-#include "src/GBpbttbl.h"
-#include "src/GBgdatbl.h"
-#include "src/GBtrbtbl.h"
-#include "src/GBaastbl.h"
-#include "src/GBsysflg.h"
-#include "src/GBdiotbl.h"
-#include "src/GBwdttbl.h"
-//#include "src/GBtimvec.h"
-#include "src/GBlogtbl.h"
-#include "src/GBperlog.h"
-#include "src/GBscnpri.h"
-#include "src/GBscntbl.h"
-#include "src/GBlfntbl.h"
-#include "src/GBprtque.h"
-#include "src/GBscnfmt.h"
-#include "src/GBchntbl.h"
-#include "src/GBrtutbl.h"
-//#include "src/GBhatfst.h" -- in GBhatslw.h
-#include "src/GBhatslw.h"
-//#include "src/GBhatext.h" -- in GBhatslw.h
-//#include "src/GBhatexc.h" -- in GBhatslw.h
-#include "src/GBseclvl.h"
-#include "src/GBsoekys.h"
-#include "src/GBevtkys.h"
-//#include "src/GBatttbl.h"
-//#include "src/GBcattbl.h"
-//#include "src/GBdsntbl.h"
-//#include "src/GBdsrtbl.h"
-#include "src/GBwndtbl.h"
-#include "src/GBsyssts.h"
-#include "src/GBschedl.h"
-#include "src/GBdevtbl.h"
-#include "src/GBscript.h"
-#include "src/GBcontbl.h"
-#include "src/GBalmshv.h"
-
-#include "src/GBsys90.h"
-#include "src/GBbase.h"
-
 int main(int argc, char **argv)
 {
     std::string point_name;
@@ -342,49 +302,6 @@ int main(int argc, char **argv)
     }
     printf("OK!\n");
 
-    /*dump_data((char*)GBsys90, 1 * sizeof(sys90), "GBsys90.dat");
-
-#include "gbattach_nt1.h"
-    dump_data((char*)GBdirtry, NUM_FILES * sizeof(dirtry), "GBdirtry.dat");
-    dump_data((char*)GBcrttbl, db_size[1], "GBcrttbl.dat");
-    dump_data((char*)GBpbttbl, db_size[2], "GBpbttbl.dat");
-    dump_data((char*)GBgdatbl, db_size[3], "GBgdatbl.dat");
-    dump_data((char*)GBsysflg, db_size[4], "GBsysflg.dat");
-    dump_data((char*)GBtrbtbl, db_size[5], "GBtrbtbl.dat");
-    dump_data((char*)GBaastbl, db_size[6], "GBaastbl.dat");
-    dump_data((char*)GBdiotbl, db_size[7], "GBdiotbl.dat");
-    dump_data((char*)GBwdttbl, db_size[8], "GBwdttbl.dat");
-    dump_data((char*)GBscnpri, db_size[9], "GBscnpri.dat");
-    dump_data((char*)GBlogtbl, db_size[10], "GBlogtbl.dat");
-    dump_data((char*)GBperlog, db_size[11], "GBperlog.dat");
-    dump_data((char*)GBprtque, db_size[12], "GBprtque.dat");
-    dump_data((char*)GBscntbl, db_size[13], "GBscntbl.dat");
-    dump_data((char*)GBlfntbl, db_size[14], "GBlfntbl.dat");
-    dump_data((char*)GBrtutbl, db_size[15], "GBrtutbl.dat");
-    dump_data((char*)GBscnfmt, db_size[16], "GBscnfmt.dat");
-    dump_data((char*)GBchntbl, db_size[17], "GBchntbl.dat");
-    dump_data((char*)GBhatext, db_size[18], "GBhatext.dat");
-    dump_data((char*)GBhatfst, db_size[19], "GBhatfst.dat");
-    dump_data((char*)GBhatslw, db_size[20], "GBhatslw.dat");
-    dump_data((char*)GBsoekys, db_size[21], "GBsoekys.dat");
-    dump_data((char*)GBhatexc, db_size[22], "GBhatexc.dat");
-    dump_data((char*)GBseclvl, db_size[23], "GBseclvl.dat");
-    //dump_data((char*)GBcattbl, db_size[24], "GBcattbl.dat");
-    dump_data((char*)GBevtkys, db_size[25], "GBevtkys.dat");
-    //dump_data((char*)GBatttbl, db_size[26], "GBatttbl.dat");
-    dump_data((char*)GBwndtbl, db_size[27], "GBwndtbl.dat");
-    //dump_data((char*)GBdsntbl, db_size[28], "GBdsntbl.dat");
-    //dump_data((char*)GBdsrtbl, db_size[29], "GBdsrtbl.dat");
-    dump_data((char*)GBdevtbl, db_size[30], "GBdevtbl.dat");
-    dump_data((char*)GBsyssts, db_size[31], "GBsyssts.dat");
-    dump_data((char*)GBschedl, db_size[32], "GBschedl.dat");
-    dump_data((char*)GBalmshv, db_size[33], "GBalmshv.dat");
-    dump_data((char*)GBscript, db_size[34], "GBscript.dat");
-    dump_data((char*)GBcontbl, db_size[35], "GBcontbl.dat");
-
-    return 0;*/
-
-    Log::set_level(Log::LOG_NONE);
     new HSCPoints();
 
     if (!HSCPoints::init())
@@ -420,47 +337,6 @@ int main(int argc, char **argv)
 
     if (point != nullptr)
         delete point;
-
-    /*for (int i=1 ; i<argc ; ++i)
-    {
-        if (strcmp(argv[i], "--tree") == 0)
-        {
-            if (point == nullptr)
-                for (int32_t i=1 ; i<1000*1000 ; ++i)
-                    HSCPoints::get_point(i)->recursive(false, 0, print_point_info, print_point_param_info);
-            else
-                point->recursive(false, 0, print_point_info, print_point_param_info);
-            return 0;
-        }
-        else if ((strcmp(argv[i], "--params") == 0) && (point != nullptr))
-            point->recursive(true, 0, print_point_info, print_point_param_info);
-        else if ((strcmp(argv[i], "--dump") == 0) && (point != nullptr))
-        {
-            printf("Dump...\n");
-            point->dump_to_file(std::string(pnt_name) + ".dat");
-        }
-        else if (strcmp(argv[i], "--verbose") == 0)
-            Log::set_level(Log::LOG_VERBOSE);
-        else if (strcmp(argv[i], "--info") == 0)
-            Log::set_level(Log::LOG_INFO);
-        else if (strcmp(argv[i], "--warning") == 0)
-            Log::set_level(Log::LOG_WARNING);
-        else if (strcmp(argv[i], "--error") == 0)
-            Log::set_level(Log::LOG_ERROR);
-        else
-        {
-            pnt_name = argv[i];
-            if (point != nullptr)
-                delete point;
-            point = HSCPoints::get_point(pnt_name);
-            if (point->get_number() == 0)
-            {
-                printf("Unable to find point '%s'!\n", pnt_name);
-                delete point;
-                return 0;
-            }
-        }
-    }*/
 
     return 0;
 }
