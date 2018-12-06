@@ -22,6 +22,8 @@ public:
 
     static HSCPoint* get_point(int32_t number);
     static HSCPoint* get_point(std::string name);
+    static HSCPoint* get_point_by_idx(int32_t idx) { if (idx < m_inst->m_points.size()) return m_inst->m_points[idx]; else return nullptr; }
+    static int get_points_count() { return m_inst->m_points.size(); }
 private:
     char                    *m_addr;
     int32_t                 *m_points_indexes;
