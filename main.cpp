@@ -5,7 +5,6 @@
 #include "hscpointparam.h"
 #include <iostream>
 #include <CmdlineParser.h>
-
 #include <fstream>
 
 
@@ -273,7 +272,7 @@ int main(int argc, char **argv)
     std::string point_name;
     int point_number;
     int log_level;
-    bool show_tree, show_params, help;
+    bool show_tree, show_params, help, scan_all;
 
     CmdlineParser *cmd = new CmdlineParser(argc, argv);
     cmd->set_name("htest.exe");
@@ -284,6 +283,7 @@ int main(int argc, char **argv)
     cmd->add_bool_param("tree", &show_tree, false, "Show points tree, root - specified point");
     cmd->add_bool_param("params", &show_params, false, "Show parameters for a specified point");
     cmd->add_bool_param("dump", &dump_point, false, "Dump a specified point to file");
+    cmd->add_bool_param("scan_all", &scan_all, false, "Scan all points and print acessible names");
     cmd->parse();
 
     if (help)
@@ -306,6 +306,18 @@ int main(int argc, char **argv)
 
     if (!HSCPoints::init())
         return 1;
+
+    if (scan_all)
+    {
+        int count = HSCPoints::scan_all_points();
+        std::cout << "Finded " << count << " points" << std::endl;
+        for (int i=0 ; i<HSCPoints::get_points_count() ; ++i)
+        {
+            HSCPoint *point = HSCPoints::get_point_by_idx(i);
+            std::cout << "pnt name: '" << point->get_name() << "';" << std::endl;
+            //std::cout << "\t" << point->get_name() << " type #" << point->get_type() << " subtype " << point->get_subtype_name() << std::endl;
+        }
+    }
 
     HSCPoint *point = nullptr;
 
