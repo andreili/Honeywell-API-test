@@ -7,9 +7,9 @@ extern "C" {
 #include <files>
 #include <parameters>
 
-#include <src/GBtrbtbl.h>
+//#include <src/GBtrbtbl.h>
 #include "src/shheap.h"
-#include "src/GBdirtry.h"
+//#include "src/GBdirtry.h"
 }
 
 #endif // HSC_INCLUDE_H
