@@ -3,9 +3,27 @@
 #include "log.h"
 #include "utils.h"
 #include <fstream>
+#include <iostream>
 #include <hscpointparam.h>
 
-std::map<int,std::string> subtype_names = {
+std::map<int,std::string> pnt_type_names = {
+    {1, "STA"},
+    {2, "ANA"},
+    {3, "ACC"},
+    {4, "ACS"},
+    {5, "CON"},
+    {6, "ASH"},
+    {7, "CLH"},
+    {8, "SYS"},
+    {9, "ORH"},
+    {10, "EQU"},
+    {101, "CDA"},
+    {102, "RDA"},
+    {103, "PSA"},
+    {104, "ACT"},
+};
+
+std::map<int,std::string> pnt_subtype_names = {
     {   0, "UNK"},
     {   5, "IO"},
     {  20, "C300"},
@@ -57,7 +75,7 @@ HSCPoint::HSCPoint(int32_t point_number)
     , m_name ("")
     , m_data (nullptr)
 {
-    //
+    get_parents();
 }
 
 HSCPoint::HSCPoint(std::string name)
@@ -65,7 +83,13 @@ HSCPoint::HSCPoint(std::string name)
     , m_name (name)
     , m_data (nullptr)
 {
-    m_number = static_cast<int32_t>(hsc_point_number(name.c_str()));
+    //m_number = static_cast<int32_t>(hsc_point_number(name.c_str()));
+    get_parents();
+}
+
+bool HSCPoint::validate()
+{
+    return HSCPoints::check_point_index(m_number);
 }
 
 bool HSCPoint::get_data()
@@ -152,12 +176,33 @@ void HSCPoint::dump_to_file(std::string fn)
     }
 }
 
+std::string HSCPoint::get_type_name()
+{
+    if (!get_data())
+        return "";
+
+    if (pnt_type_names.count(m_data->type) > 0)
+        return pnt_type_names[m_data->type];
+    else
+        return "---";
+}
+
 std::string HSCPoint::get_subtype_name()
 {
     if (!get_data())
         return "";
 
-    return subtype_names[m_data->subtype];
+    return pnt_subtype_names[m_data->subtype];
+}
+
+bool HSCPoint::is_parent(HSCPoint* parent)
+{
+    Log::message(Log::LOG_VERBOSE, "HSCPoint::is_parent() %i:\n", m_number);
+
+    for (int32_t par : m_parents)
+        if (parent->get_number() == par)
+            return true;
+    return false;
 }
 
 std::string HSCPoint::get_name()
@@ -353,6 +398,29 @@ int HSCPoint::getch_ex(uint2 prmdef, char *value, short sizeofvalue)
     return 0;
 }
 
+bool HSCPoint::get_parents()
+{
+    Log::message(Log::LOG_VERBOSE, "HSCPoint::get_parents():\n");
+
+    if (!get_data())
+        return false;
+
+    std::deque<int32_t> parents;
+    if (get_pnt_list(GDAID, m_data->parents, parents))
+    {
+        for (int i=0 ; i<parents.size() ; ++i)
+        {
+            m_parents.push_back(parents[i]);
+            HSCPoint *parent = HSCPoints::get_point(parents[i]);
+            if (parent != nullptr)
+                parent->add_child(this);
+        }
+        return true;
+    }
+    else
+        return false;
+}
+
 bool HSCPoint::get_childrens()
 {
     Log::message(Log::LOG_VERBOSE, "HSCPoint::get_childrens():\n");
@@ -363,24 +431,7 @@ bool HSCPoint::get_childrens()
     if (m_childs.size() > 0)
         return true;
 
-    char *addr = shitol(GDAID, m_data->children);
-    int32_t size = SHMSZ(GDAID, addr);
-    if (size < 1)
-        return false;
-
-    int32_t *childs = reinterpret_cast<int32_t*>(addr);
-    int idx;
-    for (idx=0 ; childs[idx] != 0 ; ++idx)
-        m_childs.push_back(childs[idx]);
-    /*int count = 0;;
-    PNTNUM *childs = nullptr;
-    if (hsc_point_get_containment_children(m_number, &count, &childs) == 0)
-        for (int i=0 ; i<count ; ++i)
-            m_childs.push_back(childs[i]);
-    hsc_em_FreePointList(childs);*/
-    Log::message(Log::LOG_INFO, "Point has %i childrens\n", idx);
-
-    return true;;
+    return get_pnt_list(GDAID, m_data->children, m_childs);
 }
 
 bool HSCPoint::get_params()

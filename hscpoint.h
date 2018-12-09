@@ -11,20 +11,23 @@
 class HSCPointParam;
 
 // types
-#define	PNT_STA	1
-#define	PNT_ANA	2
-#define	PNT_ACC	3
-#define	PNT_ACS	4
-#define	PNT_CON	5
-#define	PNT_ASH	6
-#define	PNT_CLH	7
-#define	PNT_SYS	8
-#define	PNT_ORH	9
-#define	PNT_EQU	10
-#define	PNT_CDA	101
-#define	PNT_RDA	102
-#define	PNT_PSA	103
-#define	PNT_ACT	104
+enum class EPntType : uint32_t
+{
+    PNT_STA	= 1,
+    PNT_ANA	= 2,
+    PNT_ACC	= 3,
+    PNT_ACS	= 4,
+    PNT_CON	= 5,
+    PNT_ASH	= 6,
+    PNT_CLH	= 7,
+    PNT_SYS	= 8,
+    PNT_ORH	= 9,
+    PNT_EQU	= 10,
+    PNT_CDA	= 101,
+    PNT_RDA	= 102,
+    PNT_PSA	= 103,
+    PNT_ACT	= 104,
+};
 
 // subtypes
 #define	SYS_UNK   0
@@ -78,7 +81,8 @@ public:
     HSCPoint(int32_t point_number);
     HSCPoint(std::string name);
 
-    void find_parent();
+    bool validate();
+    bool have_parents() { return (m_parents.size() > 0); }
 
     bool get_data();
 
@@ -89,12 +93,16 @@ public:
 
     STApoint* get_data_ptr() { return m_data; }
     int32_t get_number() { return m_number; }
-    uint16_t get_type() { return m_data->type; }
+
+    EPntType get_type() { return static_cast<EPntType>(m_data->type); }
+    std::string get_type_name();
 
     uint16_t get_subtype() { return m_data->subtype; }
     std::string get_subtype_name();
 
     GINDX get_parameters() { return m_data->parameters; }
+
+    bool is_parent(HSCPoint* parent);
 
     std::string get_name();
 
@@ -104,13 +112,17 @@ private:
     int32_t             m_index;
     std::string         m_name;
     STApoint            *m_data;
+    std::deque<int32_t> m_parents;
     std::deque<int32_t> m_childs;
     std::deque<HSCPointParam*>  m_params;
 
     uint2* decode_prmdef_ex(uint2 prmdef);
     int getch_ex(uint2 prmdef, char *value, short sizeofvalue);
+    bool get_parents();
     bool get_childrens();
     bool get_params();
+
+    void add_child(HSCPoint *pnt) { m_childs.push_back(pnt->get_number()); }
 };
 
 #endif // HSCPOINT_H

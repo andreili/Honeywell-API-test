@@ -107,8 +107,11 @@ bool HSCPoints::check_point_index(int32_t point)
 
 int HSCPoints::scan_all_points()
 {
-    for (int32_t i=1 ; i<1000*1000 ; ++i)
+    for (int32_t i=1 ; i<1000*500 ; ++i)
     {
+        if (!check_point_index(i))
+            continue;
+
         HSCPoint* pnt = new HSCPoint(i);
         if (pnt != nullptr)
         {
@@ -124,6 +127,8 @@ int HSCPoints::scan_all_points()
 HSCPoint* HSCPoints::get_point(int32_t number)
 {
     Log::message(Log::LOG_VERBOSE, "HSCPoints::get_point(%i):\n", number);
+    if (!check_point_index(number))
+        return nullptr;
     for (HSCPoint* pnt : m_inst->m_points)
         if (pnt->get_number() == number)
             return pnt;
@@ -140,6 +145,11 @@ HSCPoint* HSCPoints::get_point(std::string name)
         if (pnt->get_name().compare(name) == 0)
             return pnt;
     HSCPoint* pnt = new HSCPoint(name);
+    if ((!check_point_index(pnt->get_number())))
+    {
+        delete pnt;
+        return nullptr;
+    }
     if (pnt != nullptr)
         m_inst->m_points.push_back(pnt);
     return pnt;

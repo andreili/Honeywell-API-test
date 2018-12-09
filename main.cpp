@@ -328,8 +328,16 @@ int main(int argc, char **argv)
         for (int i=0 ; i<HSCPoints::get_points_count() ; ++i)
         {
             HSCPoint *point = HSCPoints::get_point_by_idx(i);
-            std::cout << "pnt name: '" << point->get_name() << "';" << std::endl;
-            //std::cout << "\t" << point->get_name() << " type #" << point->get_type() << " subtype " << point->get_subtype_name() << std::endl;
+            if ((point == nullptr) || (!point->validate()))
+                continue;
+            if (show_tree)
+            {
+                if (!point->have_parents())
+                    point->recursive(0, print_point_info);
+            }
+           //else //if (point->get_type() == EPntType::PNT_CDA)
+               std::cout << "pnt name: '" << point->get_name() << "';" << std::endl;
+           //     std::cout << "\t" << point->get_name() << " type " << point->get_type_name() << " subtype " << point->get_subtype_name() << std::endl;
         }
     }
 
