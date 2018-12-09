@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include <inttypes.h>
+#include <accctrl.h>
 
 #include "hsc_include.h"
 
@@ -171,6 +172,8 @@ class GBData
 {
 public:
     bool load();
+
+    int4 get_max_algblk() { return m_gbs.data.DIRTRY[ALGBLK_F].maxrec; }
 private:
     sys90       *m_sys90;
     int         **m_gb_base;
@@ -178,6 +181,10 @@ private:
     bool        m_db_loaded;
     uint32_t    m_api_acs;
     RTL_CRITICAL_SECTION    m_crit_sec;
+    bool                m_unk001;
+    uint32_t            m_entries_count;
+    EXPLICIT_ACCESS_A   *m_entries;
+    SID                 *m_SID;
 
     bool load_nt(bool is_server);
     bool is_dbservice_running();
@@ -190,5 +197,6 @@ private:
 };
 
 extern const uint32_t db_size[];
+extern GBData *gb_data;
 
 #endif // GBDATA_H

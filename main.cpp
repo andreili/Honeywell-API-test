@@ -6,6 +6,8 @@
 #include <iostream>
 #include <CmdlineParser.h>
 #include <fstream>
+#include "gbdata.h"
+#include "hscserver.h"
 
 
 /*
@@ -267,6 +269,8 @@ void dump_data(char* data, int size, std::string fn)
     file.close();
 }
 
+GBData *gb_data;
+
 int main(int argc, char **argv)
 {
     std::string point_name;
@@ -294,13 +298,23 @@ int main(int argc, char **argv)
 
     Log::set_level(static_cast<Log::ELogLevel>(log_level));
 
+    HSCServer server;
+    gb_data = new GBData();
     std::cout << "Initialization: ";
+    if (!gb_data->load())
+    {
+        std::cout << "Failed!" << std::endl;
+        return 0;
+    }
+    std::cout << "OK!" << std::endl;
+
+    /*std::cout << "Initialization: ";
     if (c_gbload() != 0)
     {
         std::cout << "Failed!" << std::endl;
         return 1;
     }
-    std::cout << "OK!" << std::endl;
+    std::cout << "OK!" << std::endl;*/
 
     new HSCPoints();
 

@@ -11,8 +11,11 @@ QMAKE_CXXFLAGS += -Wno-comment -Wno-unknown-pragmas -Wno-unused-function -Wno-si
 QMAKE_LFLAGS += -static-libstdc++ -static
 QMAKE_LFLAGS_CONSOLE = -Wl,-subsystem,console
 
+#QMAKE_CXXFLAGS += -finstrument-functions
+
 #QMAKE_LIBDIR += d:/Projects/Honeywell/htest/lib/
-LIBS += d:/Projects/Honeywell/htest/lib/hscsrvapi.lib d:/Projects/Honeywell/htest/shheap.lib
+#LIBS += d:/Projects/Honeywell/htest/lib/hscsrvapi.lib
+LIBS += d:/Projects/Honeywell/htest/shheap.lib
 
 SOURCES += \
         main.cpp \
@@ -22,7 +25,9 @@ SOURCES += \
     utils.cpp \
     hscpointparam.cpp \
     gbdata.cpp \
-    CmdlineParser.cpp
+    CmdlineParser.cpp \
+    trace.cpp \
+    hscserver.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -37,4 +42,5 @@ HEADERS += \
     utils.h \
     hscpointparam.h \
     gbdata.h \
-    CmdlineParser.h
+    CmdlineParser.h \
+    hscserver.h

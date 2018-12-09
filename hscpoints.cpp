@@ -3,6 +3,7 @@
 #include "hscpoint.h"
 #include "log.h"
 #include <fstream>
+#include "gbdata.h"
 
 HSCPoints* HSCPoints::m_inst = nullptr;
 
@@ -10,6 +11,7 @@ HSCPoints::HSCPoints()
     : m_points_indexes (nullptr)
 {
     m_inst = this;
+    m_points.clear();
 }
 
 bool HSCPoints::init(bool from_file)
@@ -41,7 +43,7 @@ bool HSCPoints::init(bool from_file)
     {
         shTransBegin(POINTSID, m_inst->m_addr, m_inst->m_addr);
         Log::message(Log::LOG_VERBOSE, "\t shTransBegin=0x%p\n", static_cast<void*>(m_inst->m_addr));
-        int32_t size = 4 * GBdirtry[ALGBLK_F].maxrec + 12;
+        int32_t size = 4 * gb_data->get_max_algblk() + 12;
         Log::message(Log::LOG_VERBOSE, "\t size=%i\n", size);
         m_inst->m_addr = shmalloc(POINTSID, size);
         Log::message(Log::LOG_VERBOSE, "\t shmalloc=0x%p\n", static_cast<void*>(m_inst->m_addr));
@@ -78,7 +80,7 @@ bool HSCPoints::check_point_index(int32_t point)
     if (point > m_inst->m_points_indexes[POINTS_FIRST_IDX])
     {
         Log::message(Log::LOG_VERBOSE, "\t point > pnt_no_ptr[0] (%i)\n", m_inst->m_points_indexes[POINTS_FIRST_IDX]);
-        int val = GBdirtry[ALGBLK_F].maxrec;
+        int val = gb_data->get_max_algblk();
         if (val > m_inst->m_points_indexes[POINTS_FIRST_IDX])
         {
             if (shTransBegin(POINTSID, nullptr, nullptr))

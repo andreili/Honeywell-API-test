@@ -1,6 +1,7 @@
 #include "gbdata.h"
 #include "log.h"
 #include "utils.h"
+#include "hscserver.h"
 
 #define DB_KEY 0x90000
 #define DB_PREFIX "Global\\"
@@ -70,6 +71,8 @@ bool GBData::load()
     //Log::message(Log::LOG_VERBOSE, "GBsys90 size: 0x%x\n", sizeof(sys90));
 
     m_db_loaded = false;
+    m_unk001 = false;
+
     if (!load_nt(0))
         return false;
 
@@ -102,7 +105,15 @@ bool GBData::load_nt(bool is_server)
     if (!gbattach_nt(is_server))
         return false;
 
-    //TODO
+    if (shInitialise(m_sys90, m_gbs.ptr))
+        return false;
+
+    //SetUnhandledExceptionFilter() TODO
+
+    //set_secure(GetCurrentProcess(), 6);
+    //set_secure(GetCurrentThread(), 6);
+
+    //if (m_sys90)
 
     return true;
 }
@@ -218,9 +229,49 @@ bool GBData::init_API_access()
 
 void GBData::set_secure(HANDLE handle, uint32_t value)
 {
-    // unused - only for server!
-    (void)(handle);
-    (void)(value);
+    if (!m_unk001)
+    {
+        std::string groups = HSCServer::get_reg_entry_silent("Group");
+        if (groups.size() > 0)
+        {
+            Log::message(Log::LOG_VERBOSE, "CALL GBData::set_secure %s\n", groups.c_str());
+
+            std::deque<std::string> entries;
+            m_entries_count = 1;
+            size_t start = 0;
+            for (size_t i=0 ; i<groups.size() ; ++i)
+                if (groups[i] == ';')
+                {
+                    entries.push_back(groups.substr(start, i - start - 1));
+                    start = i + 1;
+                    ++m_entries_count;
+                }
+            entries.push_back(groups.substr(start));
+
+            m_entries = new EXPLICIT_ACCESS_A[m_entries_count];
+            m_SID = new SID[m_entries_count];
+
+            for (uint32_t i=0 ; i<m_entries_count ; ++i)
+            {
+                DWORD cbSid;
+                char ref_domain[255];
+                DWORD cch_domain;
+                SID_NAME_USE sid_use;
+                if (LookupAccountNameA(nullptr, entries[i].c_str(), &m_SID[i], &cbSid, ref_domain, &cch_domain, &sid_use))
+                    break;
+
+               /* m_entries[i].grfAccessMode = 2;
+                m_entries[i].Trustee.TrusteeType = 2;
+                m_entries[i].grfAccessPermissions = 0x1fffff;
+                m_entries[i].grfInheritance = 0;
+                m_entries[i].Trustee.pMultipleTrustee = nullptr;
+                m_entries[i].Trustee.MultipleTrusteeOperation = 0;
+                m_entries[i].Trustee.TrusteeForm = 0;
+                m_entries[i].Trustee.ptstrName = ;*/
+                //TODO
+            }
+        }
+    }
 }
 
 void* GBData::map_file(const char *name, bool is_server, DWORD size)
