@@ -78,6 +78,7 @@ GBData::~GBData()
 }
 
 extern void **FGBcmn;
+EXTERN_C int **GBbase;
 
 bool GBData::load()
 {
@@ -90,9 +91,12 @@ bool GBData::load()
     if (c_gbload() != 0)
         return false;
 
+    m_sys90 = GBsys90;
+    m_gb_base = GBbase;
     for (int i=0 ; i<TABLES_COUNT ; ++i)
         m_gbs.ptr[i] = FGBcmn[i];
 
+    m_db_loaded = true;
     #endif
 
     return true;
