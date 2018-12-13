@@ -84,7 +84,6 @@ bool HSCPoints::check_point_index(int32_t point)
     else if (point > m_inst->m_points_indexes[POINTS_FIRST_IDX])
     {
         Log::message(Log::LOG_VERBOSE, "\t point > pnt_no_ptr[0] (%i)\n", m_inst->m_points_indexes[POINTS_FIRST_IDX]);
-        return false;
         int val = gb_data->get_max_algblk();
         if (val > m_inst->m_points_indexes[POINTS_FIRST_IDX])
         {
