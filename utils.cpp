@@ -56,18 +56,20 @@ bool get_pnt_list(int heap, int list_idx, std::deque<int32_t> &list)
     if (list.size() > 0)
         return true;
 
-    char *addr = shitol(heap, list_idx);
+    void *addr = shitol(heap, list_idx);
     int32_t size = SHMSZ(heap, addr);
     if (size < 1)
         return false;
 
+    size /= 4;
     int32_t *items = reinterpret_cast<int32_t*>(addr);
     int idx;
-    /*std::cout << "list items:" << std::endl;
-    for (idx=0 ; idx < (size/4) ; ++idx)
+    std::cout << "list items: " << size << std::endl;
+    for (idx=0 ; idx < size ; ++idx)
         std::cout << items[idx] << " ";
-    std::cout << std::endl;*/
-    for (idx=0 ; items[idx] != 0 ; ++idx)
+    std::cout << std::endl;
+    //for (idx=0 ; idx < size ; ++idx)
+    for (idx=0 ; items[idx] > 0 ; ++idx)
         list.push_back(items[idx]);
 
     return true;
