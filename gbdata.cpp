@@ -2,6 +2,8 @@
 #include "log.h"
 #include "utils.h"
 #include "hscserver.h"
+#include <iostream>
+#include <fstream>
 
 #define DB_KEY 0x90000
 #define DB_PREFIX "Global\\"
@@ -10,7 +12,7 @@
 
 #define FMAP_ACCES (STANDARD_RIGHTS_REQUIRED | SECTION_QUERY | SECTION_MAP_WRITE | SECTION_MAP_READ)
 
-const uint32_t db_size[] = {
+const int32_t db_sizes[] = {
              16000,
              279480,
              612000,
@@ -64,34 +66,75 @@ const uint32_t db_size[] = {
              262144,
              0};
 
+GBData::GBData()
+{
+    m_db_loaded = false;
+    m_unk001 = false;
+}
+
+GBData::~GBData()
+{
+    delete m_gb_base;
+}
+
+extern void **FGBcmn;
+
 bool GBData::load()
 {
     Log::message(Log::LOG_VERBOSE, "GBData::load\n");
 
-    //Log::message(Log::LOG_VERBOSE, "GBsys90 size: 0x%x\n", sizeof(sys90));
-
-    m_db_loaded = false;
-    m_unk001 = false;
-
+    #ifdef DATA_DIR
     if (!load_nt(0))
         return false;
+    #else
+    if (c_gbload() != 0)
+        return false;
 
-   /* GBsys90 = c_dll_GBsys90();
-    GBbase = c_dll_GBbase();
-    //TODO
+    for (int i=0 ; i<TABLES_COUNT ; ++i)
+        m_gbs.ptr[i] = FGBcmn[i];
 
-    GBdirtry = reinterpret_cast<DIRTRY>(GBbase[0]);
-    _imp__GBC000 = reinterpret_cast<short*>(GBbase[0]);
+    #endif
 
-    #include "gbattach_nt1.h"
-    for (int db_idx=1, dir_idx=1, base_idx=4 ; dir_idx<NUM_FILES ; dir_idx++, base_idx++)
-    {;
-        if ((GBdirtry[dir_idx].dflag & DMRES) && (db_size[db_idx]))
-            FGBcmn[db_idx++] = reinterpret_cast<short*>(GBbase[base_idx]);
+    return true;
+}
+
+void GBData::save_to_file()
+{
+    Log::message(Log::LOG_VERBOSE, "CALL GBData::save_to_file\n");
+
+    std::ofstream file("gbdata.dat", std::ios::out | std::ios::binary | std::ios::app);
+    file.write(reinterpret_cast<char*>(m_sys90), 0x804);
+    file.write(reinterpret_cast<char*>(m_gb_base), sizeof(int) * FILES_COUNT);
+    for (int i=0 ; i<TABLES_COUNT ; ++i)
+        file.write(reinterpret_cast<char*>(m_gbs.ptr[i]), db_sizes[i] * 2);
+    file.close();
+}
+
+bool GBData::load_from_file()
+{
+    Log::message(Log::LOG_VERBOSE, "CALL GBData::load_from_file %x\n", sizeof(sys90));
+
+    std::ifstream file("gbdata.dat", std::ios::in | std::ios::binary | std::ios::app);
+
+    m_sys90 = (sys90*)malloc(0x804);
+    file.read(reinterpret_cast<char*>(m_sys90), 0x804);
+
+    m_gb_base = new int*[FILES_COUNT];
+    file.read(reinterpret_cast<char*>(m_gb_base), sizeof(int) * FILES_COUNT);
+
+    for (int i=0 ; i<TABLES_COUNT ; ++i)
+    {
+        m_gbs.ptr[i] = malloc(db_sizes[i] * 2);
+        file.read(reinterpret_cast<char*>(m_gbs.ptr[i]), db_sizes[i] * 2);
     }
 
-    #include "gbattach_nt.in.c"*/
+    file.close();
 
+    Log::message(Log::LOG_VERBOSE, "\tif (shInitialise(m_sys90, m_gbs.ptr))\n");
+    if (shInitialise(m_sys90, m_gbs.ptr))
+        return false;
+
+    Log::message(Log::LOG_VERBOSE, "\tOK\n");
     return true;
 }
 
@@ -171,7 +214,7 @@ bool GBData::gbattach_nt(bool is_server)
     }
     memset(m_gb_base, 0, sizeof(int*) * FILES_COUNT);
 
-    m_gbs.data.DIRTRY = static_cast<dirtry*>(map_file(DB_DIRTRY, is_server, 0x7d00));
+    m_gbs.data.DIRTRY = static_cast<dirtry*>(map_file(DB_DIRTRY, is_server, db_sizes[0] * 2));
     if (m_gbs.data.DIRTRY == nullptr)
         return false;
 
@@ -192,7 +235,7 @@ bool GBData::gbattach_nt(bool is_server)
         if ((m_gbs.data.DIRTRY[dir_idx].dflag & DMRES) != DMRES)
             continue;
 
-        uint32_t map_size = db_size[db_idx] * 2;
+        int32_t map_size = db_sizes[db_idx] * 2;
         if (map_size == 0)
             break;
 
@@ -202,7 +245,6 @@ bool GBData::gbattach_nt(bool is_server)
         void* val = map_file(buf, is_server, map_size);
         if (val == nullptr)
             return false;
-        Log::message(Log::LOG_VERBOSE, "\t loaded file %s pointer 0x%p\n", buf, val);
         m_gbs.ptr[db_idx++] = val;
     }
 
@@ -229,6 +271,9 @@ bool GBData::init_API_access()
 
 void GBData::set_secure(HANDLE handle, uint32_t value)
 {
+    (void)(handle);
+    (void)(value);
+
     if (!m_unk001)
     {
         std::string groups = HSCServer::get_reg_entry_silent("Group");

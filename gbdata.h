@@ -171,9 +171,16 @@ union GB_tables_t
 class GBData
 {
 public:
-    bool load();
+    GBData();
+    ~GBData();
 
-    int4 get_max_algblk() { return m_gbs.data.DIRTRY[ALGBLK_F].maxrec; }
+    bool load();
+    bool is_loaded() { return m_db_loaded; }
+
+    void save_to_file();
+    bool load_from_file();
+
+    int4 get_max_algblk() { return m_gbs.data.DIRTRY[ALGBLK_T].maxrec; }
 private:
     sys90       *m_sys90;
     int         **m_gb_base;
@@ -196,7 +203,7 @@ private:
     void* map_file(const char *name, bool is_server, DWORD size);
 };
 
-extern const uint32_t db_size[];
+extern const int32_t db_sizes[];
 extern GBData *gb_data;
 
 #endif // GBDATA_H
