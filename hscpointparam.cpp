@@ -3,11 +3,36 @@
 #include "log.h"
 #include <fstream>
 
+std::map<int,std::string> param_type_names = {
+    {0              , "BOOL"},
+    {DT_CHAR        , "CHAR"},
+    {DT_INT2        , "INT2"},
+    {DT_INT4        , "INT4"},
+    {DT_REAL        , "REAL"},
+    {DT_DBLE        , "DOUBLE"},
+    {DT_HIST        , "HISTORY"},
+    {DT_VAR         , "VAR"},
+    {DT_ENUM        , "ENUM"},
+    {DT_DATE_TIME   , "DATE_TIME"},
+    {DT_STATUS      , "STATUS"},
+    {DT_SRCADDR     , "SRC_ADDR"},
+    {DT_DSTADDR     , "DST_ADDR"},
+    {DT_SERVAR      , "SERVAR"},
+    {DT_POINTREF    , "POINT_REF"},
+    {DT_INT8        , "INT8"},
+    {DT_TIME        , "TIME"},
+    {DT_DELTATIME   , "DELTA_TIME"},
+    {DT_TIMEOFDAY   , "TIME_O_FDAY"},
+    {DT_ALARMHANDLE , "ALARM_HANDLE"},
+    {DT_POINTREF2   , "POINT_REF2"},
+};
+
 HSCPointParam::HSCPointParam(HSCPoint *point, int param, std::string name)
     : m_point (point)
     , m_param (param)
     , m_data (nullptr)
     , m_name (name)
+    , m_type (0)
 {
 }
 
@@ -80,6 +105,11 @@ bool HSCPointParam::get_data()
 bool HSCPointParam::is_historisable()
 {
     return false;
+}
+
+std::string HSCPointParam::get_type_name()
+{
+    return param_type_names[m_type];
 }
 
 bool HSCPointParam::is_param_acessible(int param_no)

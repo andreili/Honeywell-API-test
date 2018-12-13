@@ -45,11 +45,17 @@ public:
     bool is_historisable();
 
     int get_index() { return m_param; }
-    EPrmType get_type() { if (get_data()) return static_cast<EPrmType>(m_data->type); else return EPrmType::UNK; }
+
+    EPrmType get_type() { return static_cast<EPrmType>(m_type); }
+    void set_type(uint16_t type) { m_type = type; }
+    std::string get_type_name();
 
     std::string get_name() { return m_name; }
 
     HSCPoint* get_parent() { return m_point; }
+
+    void set_val_pnt(PARvalue *val) { m_value = val; }
+    PARvalue* get_val_pnt() { return m_value; }
 
     static bool is_param_acessible(int param_no);
 private:
@@ -57,6 +63,8 @@ private:
     int         m_param;
     PNTparam    *m_data;
     std::string m_name;
+    uint16_t    m_type;
+    PARvalue    *m_value;
 };
 
 #endif // HSCPOINTPARAM_H
