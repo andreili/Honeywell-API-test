@@ -77,9 +77,12 @@ bool HSCPoints::check_point_index(int32_t point)
 {
     Log::message(Log::LOG_VERBOSE, "HSCPoints::check_point_index(%i):\n", point);
 
-    if (point > m_inst->m_points_indexes[POINTS_FIRST_IDX])
+    if (point <= 0)
+        return false;
+    else if (point > m_inst->m_points_indexes[POINTS_FIRST_IDX])
     {
         Log::message(Log::LOG_VERBOSE, "\t point > pnt_no_ptr[0] (%i)\n", m_inst->m_points_indexes[POINTS_FIRST_IDX]);
+        return false;
         int val = gb_data->get_max_algblk();
         if (val > m_inst->m_points_indexes[POINTS_FIRST_IDX])
         {
@@ -101,6 +104,8 @@ bool HSCPoints::check_point_index(int32_t point)
             shTransEnd(POINTSID, nullptr, nullptr);
         }
     }
+    else if (get_idx(point) <= 0)
+        return false;
 
     return true;
 }
