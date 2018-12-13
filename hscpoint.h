@@ -94,7 +94,7 @@ public:
     STApoint* get_data_ptr() { return m_data; }
     int32_t get_number() { return m_number; }
 
-    EPntType get_type() { return static_cast<EPntType>(m_data->type); }
+    EPntType get_type();
     std::string get_type_name();
 
     uint16_t get_subtype() { return m_data->subtype; }

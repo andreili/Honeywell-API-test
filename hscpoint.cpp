@@ -176,6 +176,11 @@ void HSCPoint::dump_to_file(std::string fn)
     }
 }
 
+EPntType HSCPoint::get_type()
+{
+    return static_cast<EPntType>(m_data->type);
+}
+
 std::string HSCPoint::get_type_name()
 {
     if (!get_data())
