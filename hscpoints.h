@@ -4,10 +4,13 @@
 #include <inttypes.h>
 #include <string>
 #include <deque>
+#include <functional>
+#include "hsc_include.h"
 
 #define POINTS_FIRST_IDX 2
 
 class HSCPoint;
+class HSCPointParam;
 
 class HSCPoints
 {
@@ -22,15 +25,21 @@ public:
 
     static int scan_all_points();
 
+    static void hist_queue_clear() { m_inst->m_params.clear(); }
+    static void hist_queue_add(HSCPointParam *param) { m_inst->m_params.push_back(param); }
+    static bool hist_update(std::function<void(HSCPointParam*)> on_param_value);
+
     static HSCPoint* get_point(int32_t number);
     static HSCPoint* get_point(std::string name);
 
     static int get_points_count() { return m_inst->m_points.size(); }
     static HSCPoint* get_point_by_idx(int32_t idx) { if (idx < m_inst->m_points.size()) return m_inst->m_points[idx]; else return nullptr; }
 private:
-    char                    *m_addr;
-    int32_t                 *m_points_indexes;
-    std::deque<HSCPoint*>   m_points;
+    void                        *m_addr;
+    int32_t                     *m_points_indexes;
+    std::deque<HSCPoint*>       m_points;
+    std::deque<HSCPointParam*>  m_params;
+    PARvalue                    *m_values;
 
     static HSCPoints *m_inst;
 };

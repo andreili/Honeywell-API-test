@@ -124,6 +124,58 @@ int HSCPoints::scan_all_points()
     return get_points_count();
 }
 
+bool HSCPoints::hist_update(std::function<void(HSCPointParam*)> on_param_value)
+{
+    if (m_inst->m_params.size() == 0)
+        return false;
+
+    if (m_inst->m_values != nullptr)
+    {
+        delete m_inst->m_values;
+        m_inst->m_values = nullptr;
+    }
+
+    size_t count = m_inst->m_params.size();
+    m_inst->m_values = new PARvalue[count];
+    int *hists = new int[count];
+    int *status = new int[count];
+    PNTNUM *points = new PNTNUM[count];
+    PRMNUM *params = new PRMNUM[count];
+    uint16_t *types = new uint16_t[count];
+    for (size_t i=0 ; i<count ; ++i)
+    {
+        HSCPointParam *param = m_inst->m_params[i];
+        points[i] = static_cast<PNTNUM>(param->get_parent()->get_number());
+        params[i] = static_cast<PRMNUM>(param->get_index());
+        hists[i] = 0;
+    }
+
+    if (hsc_param_values(count, ONE_SHOT, points, params, hists, m_inst->m_values, types, status) != 0)
+    {
+        delete[] hists;
+        delete[] status;
+        delete[] points;
+        delete[] params;
+        delete[] types;
+        return false;
+    }
+
+    for (size_t i=0 ; i<count ; ++i)
+    {
+        HSCPointParam *param = m_inst->m_params[i];
+        param->set_type(types[i]);
+        param->set_val_pnt(&m_inst->m_values[i]);
+        on_param_value(param);
+    }
+
+    delete[] hists;
+    delete[] status;
+    delete[] points;
+    delete[] params;
+    delete[] types;
+    return true;
+}
+
 HSCPoint* HSCPoints::get_point(int32_t number)
 {
     Log::message(Log::LOG_VERBOSE, "HSCPoints::get_point(%i):\n", number);
