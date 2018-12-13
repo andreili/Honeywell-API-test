@@ -4,11 +4,13 @@
 #include "log.h"
 #include <fstream>
 #include "gbdata.h"
+#include "hscpointparam.h"
 
 HSCPoints* HSCPoints::m_inst = nullptr;
 
 HSCPoints::HSCPoints()
     : m_points_indexes (nullptr)
+    , m_values (nullptr)
 {
     m_inst = this;
     m_points.clear();
