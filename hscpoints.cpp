@@ -131,6 +131,12 @@ int HSCPoints::scan_all_points()
     return get_points_count();
 }
 
+void HSCPoints::hist_queue_add(HSCPointParam *param)
+{
+    if (param != nullptr)
+        m_inst->m_params.push_back(param);
+}
+
 bool HSCPoints::hist_update(std::function<void(HSCPointParam*)> on_param_value)
 {
     if (m_inst->m_params.size() == 0)
@@ -143,6 +149,9 @@ bool HSCPoints::hist_update(std::function<void(HSCPointParam*)> on_param_value)
     }
 
     size_t count = m_inst->m_params.size();
+    if (count == 0)
+        return false;
+
     m_inst->m_values = new PARvalue[count];
     int *hists = new int[count];
     int *status = new int[count];

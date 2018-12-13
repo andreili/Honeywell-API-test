@@ -26,7 +26,7 @@ public:
     static int scan_all_points();
 
     static void hist_queue_clear() { m_inst->m_params.clear(); }
-    static void hist_queue_add(HSCPointParam *param) { m_inst->m_params.push_back(param); }
+    static void hist_queue_add(HSCPointParam *param);
     static bool hist_update(std::function<void(HSCPointParam*)> on_param_value);
 
     static HSCPoint* get_point(int32_t number);
