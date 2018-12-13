@@ -1,6 +1,8 @@
 #include "log.h"
 #include <stdarg.h>
 #include <iostream>
+#include <fstream>
+#include <windows.h>
 
 Log::ELogLevel Log::log_level;
 
@@ -24,6 +26,11 @@ void Log::message(ELogLevel level, std::string fmt, ...)
         va_end(ap);
 
         std::cout << text;
+
+        std::ofstream f;
+        f.open("log.txt", std::ios_base::app);
+        f << text;
+        f.close();
     }
 }
 
