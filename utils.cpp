@@ -63,13 +63,8 @@ bool get_pnt_list(int heap, int list_idx, std::deque<int32_t> &list)
 
     size /= 4;
     int32_t *items = reinterpret_cast<int32_t*>(addr);
-    int idx;
-    std::cout << "list items: " << size << std::endl;
-    for (idx=0 ; idx < size ; ++idx)
-        std::cout << items[idx] << " ";
-    std::cout << std::endl;
-    //for (idx=0 ; idx < size ; ++idx)
-    for (idx=0 ; items[idx] > 0 ; ++idx)
+    //for (int idx=0 ; idx < size ; ++idx)
+    for (int idx=0 ; items[idx] > 0 ; ++idx)
         list.push_back(items[idx]);
 
     return true;
